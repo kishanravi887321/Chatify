@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes import chat
+from src.api import chats
 
 
 app=FastAPI()
@@ -15,4 +15,4 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-app.include_router(chat.router)
+app.include_router(chats.router)

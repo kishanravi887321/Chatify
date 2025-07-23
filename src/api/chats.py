@@ -3,24 +3,12 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
 # Flexible imports to handle different deployment scenarios
-try:
-    # from ...core.store import ChatifyService
-    from ...db.dep import get_db  # get_db yields SessionLocal
-    from ...db.utils import ExistUser
-    from ...core.make import ChatifyService
-except ImportError:
-    try:
-        from core.make import ChatifyService
-        from db.dep import get_db
-        from db.utils import ExistUser
-    except ImportError:
-        import sys
-        import os
-        # Add parent directory to path
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-        from core.make import ChatifyService
-        from db.dep import get_db
-        from db.utils import ExistUser
+
+from src.api.store import ChatifyService
+from src.db.utils import ExistUser
+from ..db.dep import get_db  # get_db yields SessionLocal
+
+   
 
 router = APIRouter(prefix="/api/chatify", tags=["Chatify"])
 

@@ -14,14 +14,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # Try different import paths based on where we're running from
 try:
-    from src.api import chats
+    from src.api.chats import chat
 except ImportError:
     try:
-        from api import chats
+        from api.chats import chat
     except ImportError:
         # If we're in the src directory already
         sys.path.insert(0, str(current_dir))
-        from api import chats
+        from api.chats import chat
 
 app = FastAPI()
 
@@ -34,7 +34,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-app.include_router(chats.router)
+app.include_router(chat.router)
 
 if __name__ == "__main__":
     import uvicorn
