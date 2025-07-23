@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import Session
 
-from src.core import ChatifyService
+from src.core.store import ChatifyService
 from src.db.dep import get_db  # get_db yields SessionLocal
 from src.db.utils import ExistUser
 
