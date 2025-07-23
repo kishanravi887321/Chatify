@@ -1,8 +1,9 @@
 from pinecone import Pinecone, ServerlessSpec, describe_index
 from dotenv import load_dotenv
 import os
+from sentence_transformers import SentenceTransformer
 from ..services.script import  SecretKeyGenerator
-api_key=SecretKeyGenerator().get_secret_key
+
 from .logics import VectorDBLogic
 load_dotenv()   
 
@@ -32,7 +33,8 @@ description = pc.describe_index(index_name)
 print("Metric used:", description['metric'])
 
 
-def upsert_to_vectordb(raw_text, email, project_name, api_key):
+def upsert_to_vectordb(raw_text, email, project_name):
+    api_key=SecretKeyGenerator().get_secret_key()
     try:
         # Initialize VectorDBLogic with the raw text
         vector_db_logic = VectorDBLogic(raw_text)
@@ -67,4 +69,24 @@ def upsert_to_vectordb(raw_text, email, project_name, api_key):
 
 
 
+def get_relevant_chunks_from_vectordb(query, api_key, top_k=3):
+    # Load the model
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    
+    # Convert query into embedding
+    query_embedding = model.encode(query).tolist()
+    
+    # Query Pinecone index
+    result = index.query(
+        vector=query_embedding,
+        top_k=top_k,
+        include_metadata=True,
+        filter={"api_key": {"$eq": api_key}}  # ✅ Filter only by provided api_key
+    )
+    matches = result.get("matches", [])
+    if not matches:
+        print("❌ No relevant chunks found.")
+        return []
 
+    # Extract and return the matched text chunks
+    return [match["metadata"]["chunk_text"] for match in result.get("matches", [])]
