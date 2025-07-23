@@ -1,4 +1,7 @@
-from .handledb import User
+try:
+    from .handledb import User
+except ImportError:
+    from handledb import User
 
 
 class ExistUser:

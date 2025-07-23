@@ -1,4 +1,7 @@
-from .connect import SessionLocal
+try:
+    from .connect import SessionLocal
+except ImportError:
+    from connect import SessionLocal
 
 def get_db():
     db = SessionLocal()

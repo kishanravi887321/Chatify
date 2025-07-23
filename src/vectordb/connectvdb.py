@@ -2,9 +2,20 @@ from pinecone import Pinecone, ServerlessSpec, describe_index
 from dotenv import load_dotenv
 import os
 from sentence_transformers import SentenceTransformer
-from ..services.script import  SecretKeyGenerator
 
-from .logics import VectorDBLogic
+try:
+    from ..services.script import  SecretKeyGenerator
+    from .logics import VectorDBLogic
+except ImportError:
+    try:
+        from services.script import SecretKeyGenerator
+        from logics import VectorDBLogic
+    except ImportError:
+        import sys
+        sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+        from services.script import SecretKeyGenerator
+        from logics import VectorDBLogic
+
 load_dotenv()   
 
 # 📦 Initialize Pinecone client
