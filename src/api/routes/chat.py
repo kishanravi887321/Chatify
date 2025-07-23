@@ -4,9 +4,10 @@ from sqlalchemy.orm import Session
 
 # Flexible imports to handle different deployment scenarios
 try:
-    from ...core.store import ChatifyService
+    # from ...core.store import ChatifyService
     from ...db.dep import get_db  # get_db yields SessionLocal
     from ...db.utils import ExistUser
+    from ...core.store import ChatifyService
 except ImportError:
     try:
         from core.store import ChatifyService
