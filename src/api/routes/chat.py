@@ -7,10 +7,10 @@ try:
     # from ...core.store import ChatifyService
     from ...db.dep import get_db  # get_db yields SessionLocal
     from ...db.utils import ExistUser
-    from ...core.store import ChatifyService
+    from ...core.make import ChatifyService
 except ImportError:
     try:
-        from core.store import ChatifyService
+        from core.make import ChatifyService
         from db.dep import get_db
         from db.utils import ExistUser
     except ImportError:
@@ -18,7 +18,7 @@ except ImportError:
         import os
         # Add parent directory to path
         sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-        from core.store import ChatifyService
+        from core.make import ChatifyService
         from db.dep import get_db
         from db.utils import ExistUser
 
