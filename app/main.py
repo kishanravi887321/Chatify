@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes import chat
+from app.src.api.routes import chat
 
 
 app=FastAPI()
