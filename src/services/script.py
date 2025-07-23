@@ -18,8 +18,3 @@ class SecretKeyGenerator:
         return self.get_hashed_key() == hashlib.sha256(key_to_compare.encode()).hexdigest()
     
 
-sk=SecretKeyGenerator()
-x=sk.get_secret_key()
-
-print(f"Generated Secret Key: {x}")
-print(sk.compare_keys(x))
