@@ -8,4 +8,5 @@ requests==2.32.4
 scikit-learn==1.7.1
 sentence-transformers==5.0.0
 sqlalchemy==2.0.41
-uvicorn[standard]
+uvicorn[standard]==0.33.0
+gunicorn==23.0.0
