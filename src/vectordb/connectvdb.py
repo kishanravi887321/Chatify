@@ -68,25 +68,45 @@ def upsert_to_vectordb(raw_text, email, project_name):
         return None
 
 
+from fastapi import HTTPException
+
 
 def get_relevant_chunks_from_vectordb(query, api_key, top_k=3):
     # Load the model
     model = SentenceTransformer("all-MiniLM-L6-v2")
     
-    # Convert query into embedding
+    # Encode the query into embedding
     query_embedding = model.encode(query).tolist()
+
+    # First, check if API key exists in metadata
+    key_check_result = index.query(
+        vector=query_embedding,
+        top_k=1,  # Just need one match to confirm existence
+        include_metadata=True,
+        filter={"api_key": {"$eq": api_key}}
+    )
     
-    # Query Pinecone index
+    if not key_check_result.get("matches"):  # ❌ No match = API key not found
+        raise HTTPException(
+            status_code=401,
+            detail="❌ Wrong API key: No matching metadata found."
+        )
+
+    # ✅ API key valid — Now query for top_k relevant chunks
     result = index.query(
         vector=query_embedding,
         top_k=top_k,
         include_metadata=True,
-        filter={"api_key": {"$eq": api_key}}  # ✅ Filter only by provided api_key
+        filter={"api_key": {"$eq": api_key}}
     )
-    matches = result.get("matches", [])
-    if not matches:
-        print("❌ No relevant chunks found.")
-        return []
 
-    # Extract and return the matched text chunks
-    return [match["metadata"]["chunk_text"] for match in result.get("matches", [])]
+    matches = result.get("matches", [])
+    
+    if not matches:
+        raise HTTPException(
+            status_code=404,
+            detail="⚠️ No relevant chunks found for this query."
+        )
+
+    # Return matched text chunks
+    return [match["metadata"]["chunk_text"] for match in matches]

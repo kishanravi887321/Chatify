@@ -12,7 +12,7 @@ class VectorDBLogic:
 
     def load_and_split_text(self,raw_text=None):
        
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=27)
         split_texts = text_splitter.split_text(raw_text)
         print(f"✅ Number of chunks: {len(split_texts)}")
         return split_texts
