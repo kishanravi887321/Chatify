@@ -23,6 +23,10 @@ class UpsertRequest(BaseModel):
     project_name: str
 
 
+@router.get("/")
+def health_check():
+    return {"status": "ok"}
+
 @router.post("/ask")
 def ask_question(payload: QueryRequest):
     response, status_code = ChatifyService.handle_query(api_key=payload.api_key, query=payload.query)
