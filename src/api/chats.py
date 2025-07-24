@@ -10,7 +10,7 @@ from ..db.dep import get_db  # get_db yields SessionLocal
 
    
 
-router = APIRouter(prefix="/api/chatify", tags=["Chatify"])
+router = APIRouter(prefix="/api/chatify", tags=["Chatify1"])
 
 # Request Models
 class QueryRequest(BaseModel):
