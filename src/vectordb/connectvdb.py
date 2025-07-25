@@ -2,6 +2,7 @@ from pinecone import Pinecone, ServerlessSpec, describe_index
 from dotenv import load_dotenv
 import os
 from sentence_transformers import SentenceTransformer
+from ..services.script import SecretKeyGenerator
 from .logics import VectorDBLogic
 
 load_dotenv()   
@@ -32,7 +33,7 @@ description = pc.describe_index(index_name)
 print("Metric used:", description['metric'])
 
 
-def upsert_to_vectordb(raw_text, email, project_name):
+def upsert_to_vectordb(raw_text, email ):
     api_key=SecretKeyGenerator().get_secret_key()
     try:
         # Initialize VectorDBLogic with the raw text
@@ -41,13 +42,13 @@ def upsert_to_vectordb(raw_text, email, project_name):
         # Prepare data for upsert
         upsert_data = []
         for i, chunk in enumerate(vector_db_logic.split_texts):
-            unique_name = vector_db_logic.get_unique_name(email, project_name)
+            unique_name = vector_db_logic.get_unique_name(email,"for_saksin")
             upsert_data.append({
                 "id": f"{unique_name}_{i}",
                 "values": vector_db_logic.model.encode([chunk])[0].tolist(),
                 "metadata": {
                     "email": email,
-                    "project_name": project_name,
+                   
                     "chunk_index": i,
                     "chunk_text": chunk,
                     "api_key": api_key
@@ -70,7 +71,7 @@ def upsert_to_vectordb(raw_text, email, project_name):
 from fastapi import HTTPException
 
 
-def get_relevant_chunks_from_vectordb(query, api_key, top_k=3):
+def get_relevant_chunks_from_vectordb(query, api_key, top_k=12):
     # Load the model
     model = SentenceTransformer("all-MiniLM-L6-v2")
     
@@ -82,13 +83,13 @@ def get_relevant_chunks_from_vectordb(query, api_key, top_k=3):
         vector=query_embedding,
         top_k=1,  # Just need one match to confirm existence
         include_metadata=True,
-        filter={"api_key": {"$eq": api_key}}
+        filter={"email": {"$eq": api_key}}
     )
     
     if not key_check_result.get("matches"):  # ❌ No match = API key not found
         raise HTTPException(
             status_code=401,
-            detail="❌ Wrong API key: No matching metadata found."
+            detail="❌ Wrong email address: No matching metadata found."
         )
 
     # ✅ API key valid — Now query for top_k relevant chunks
@@ -96,7 +97,7 @@ def get_relevant_chunks_from_vectordb(query, api_key, top_k=3):
         vector=query_embedding,
         top_k=top_k,
         include_metadata=True,
-        filter={"api_key": {"$eq": api_key}}
+        filter={"email": {"$eq": api_key}}
     )
 
     matches = result.get("matches", [])

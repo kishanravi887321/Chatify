@@ -42,7 +42,7 @@ class ChatifyService:
         {relevant_chunk}
 
         Question:
-        {query}
+        {query +" make the answer as concise as possible. if the user asks long question, try to answer long . And if short then provied in the 20 tokens or more then "}
         """
 
         payload = {
@@ -94,12 +94,13 @@ class ChatifyService:
 
 
     @staticmethod
-    def upsert_text_and_generate_api_key(raw_text: str, email: str, project_name: str):
+    def upsert_text_and_generate_api_key(raw_text: str, email: str):
         if not ExistUser(email).check_user_exists(db_session=SessionLocal()):
             print
             return {"message": "User already exists."}, 400
-        print('raw_text', raw_text)
-        api_key = upsert_to_vectordb(raw_text, email, project_name)
+       
+        api_key = upsert_to_vectordb(raw_text, email)
+        print('api_key', api_key)
         if not api_key:
             return {"message": "Failed to store data in vector DB."}, 500
         return {"api_key": api_key}, 201

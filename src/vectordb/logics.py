@@ -12,7 +12,7 @@ class VectorDBLogic:
 
     def load_and_split_text(self,raw_text=None):
        
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=27)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=350, chunk_overlap=150)
         split_texts = text_splitter.split_text(raw_text)
         print(f"✅ Number of chunks: {len(split_texts)}")
         return split_texts
@@ -25,5 +25,6 @@ class VectorDBLogic:
     
     def get_unique_name(self,email,project_name):
         return f"{email}_{project_name}".replace(" ", "_").lower()
+    #
         
     
